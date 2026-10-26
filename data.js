@@ -237,7 +237,7 @@ const OBJECTS = [
       {name:'cost_basis',type:'String',required:true,source:'成本系统',desc:'成本口径'},
       {name:'currency',type:'String',required:true,source:'成本系统',desc:'币种'},
       {name:'analysis_date',type:'Date',required:true,source:'系统',desc:'对比时间'},
-      {name:'status',type:'String',required:true,source:'系统',desc:'分析状态'},
+      {name:'status',type:'String',required:true,source:'系统',desc:'分析状态(Created/Running/Completed/Failed/Invalidated/Archived)'},
     ],
     relations:[
       {name:'baselineOf',target:'BOM',cardinality:'N:1',desc:'对比的基准BOM'},
@@ -263,9 +263,9 @@ const OBJECTS = [
       {name:'difference_amount',type:'Decimal',required:true,source:'计算',desc:'差异金额'},
       {name:'difference_percent',type:'Decimal',required:true,source:'计算',desc:'差异百分比'},
       {name:'contribution_percent',type:'Decimal',required:true,source:'计算',desc:'贡献率'},
-      {name:'root_cause_type',type:'String',required:false,source:'AI分析',desc:'根因类型'},
+      {name:'root_cause_type',type:'String',required:false,source:'AI分析',desc:'根因类型(Specification Difference/Quantity Difference/Unit Price Difference/Supplier Difference/Functional Difference/New-Removed Item/Material Change/Process Change)'},
       {name:'confidence',type:'String',required:false,source:'AI评估',desc:'置信度'},
-      {name:'status',type:'String',required:true,source:'系统',desc:'结果状态'},
+      {name:'status',type:'String',required:true,source:'系统',desc:'结果状态(Active/Verified/Invalidated)'},
     ],
     relations:[
       {name:'producedBy',target:'Comparison',cardinality:'N:1',desc:'结果由对比产生'},
@@ -404,9 +404,9 @@ var DB_TABLES_DATA = [
     {name:'difference_amount',type:'DECIMAL(12,4)',required:true,semantic:'difference_amount',source:'计算',desc:'差异金额'},
     {name:'difference_percent',type:'DECIMAL(6,2)',required:true,semantic:'difference_percent',source:'计算',desc:'差异百分比'},
     {name:'contribution_percent',type:'DECIMAL(6,2)',required:true,semantic:'contribution_percent',source:'计算',desc:'贡献率'},
-    {name:'root_cause_type',type:'VARCHAR(32)',required:false,semantic:'root_cause_type',source:'AI分析',desc:'根因类型'},
+    {name:'root_cause_type',type:'VARCHAR(256)',required:false,semantic:'root_cause_type',source:'AI分析',desc:'根因类型(Specification Difference/Quantity Difference/Unit Price Difference/Supplier Difference/Functional Difference/New-Removed Item/Material Change/Process Change)'},
     {name:'confidence',type:'VARCHAR(16)',required:false,semantic:'confidence',source:'AI评估',desc:'置信度'},
-    {name:'status',type:'VARCHAR(16)',required:true,semantic:'status',source:'系统',desc:'结果状态'},
+    {name:'status',type:'VARCHAR(16)',required:true,semantic:'status',source:'系统',desc:'结果状态(Active/Verified/Invalidated)'},
     {name:'created_at',type:'TIMESTAMP',required:true,semantic:null,source:'系统',desc:'创建时间'},
   ]},
   {name:'ontology_relationships',object:'(关系表)',fields:[
