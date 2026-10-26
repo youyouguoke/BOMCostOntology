@@ -256,7 +256,8 @@ const OBJECTS = [
       {name:'result_id',type:'String',required:true,source:'系统',desc:'结果唯一ID'},
       {name:'comparison_id',type:'String',required:true,source:'系统',desc:'关联对比'},
       {name:'module_id',type:'String',required:true,source:'计算',desc:'成本模块'},
-      {name:'bom_item_id',type:'String',required:false,source:'计算',desc:'关联BOM项(料件级结果)'},
+      {name:'baseline_bom_item_id',type:'String',required:false,source:'计算',desc:'基准侧BOM项(料件级结果)'},
+      {name:'benchmark_bom_item_id',type:'String',required:false,source:'计算',desc:'目标侧BOM项(料件级结果)'},
       {name:'baseline_cost',type:'Decimal',required:true,source:'计算',desc:'基准成本'},
       {name:'benchmark_cost',type:'Decimal',required:true,source:'计算',desc:'目标成本'},
       {name:'difference_amount',type:'Decimal',required:true,source:'计算',desc:'差异金额'},
@@ -269,7 +270,7 @@ const OBJECTS = [
     relations:[
       {name:'producedBy',target:'Comparison',cardinality:'N:1',desc:'结果由对比产生'},
       {name:'aboutModule',target:'CostModule',cardinality:'N:1',desc:'结果关于一个成本模块'},
-      {name:'refersTo',target:'BOMItem',cardinality:'N:1',desc:'料件级结果关联BOM项'},
+      {name:'refersTo',target:'BOMItem',cardinality:'N:N',desc:'料件级结果关联对比双方的BOM项(baseline/benchmark)'},
       {name:'verifiedBy',target:'CostObservation',cardinality:'N:N',desc:'结果由成本事实验证'},
     ],
     actions:[
@@ -396,7 +397,8 @@ var DB_TABLES_DATA = [
     {name:'id',type:'UUID',required:true,semantic:'result_id',source:'系统',desc:'主键'},
     {name:'comparison_id',type:'UUID',required:true,semantic:'comparison_id',source:'系统',desc:'关联对比'},
     {name:'module_id',type:'UUID',required:true,semantic:'module_id',source:'计算',desc:'成本模块'},
-    {name:'bom_item_id',type:'UUID',required:false,semantic:'bom_item_id',source:'计算',desc:'关联BOM项(料件级结果)'},
+    {name:'baseline_bom_item_id',type:'UUID',required:false,semantic:'baseline_bom_item_id',source:'计算',desc:'基准侧BOM项(料件级结果)'},
+    {name:'benchmark_bom_item_id',type:'UUID',required:false,semantic:'benchmark_bom_item_id',source:'计算',desc:'目标侧BOM项(料件级结果)'},
     {name:'baseline_cost',type:'DECIMAL(12,4)',required:true,semantic:'baseline_cost',source:'计算',desc:'基准成本'},
     {name:'benchmark_cost',type:'DECIMAL(12,4)',required:true,semantic:'benchmark_cost',source:'计算',desc:'目标成本'},
     {name:'difference_amount',type:'DECIMAL(12,4)',required:true,semantic:'difference_amount',source:'计算',desc:'差异金额'},
