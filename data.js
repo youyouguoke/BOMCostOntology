@@ -249,7 +249,34 @@ const OBJECTS = [
       {name:'Run Comparison',type:'分析类',perm:'Cost Engineer',approval:'否'},
       {name:'Cancel Comparison',type:'审批类',perm:'Cost Manager',approval:'是'},
     ],
-    dbTables:['comparisons','comparison_results'], skills:['BOM Compare','Cost Diagnosis'], mcp:['BOM MCP','Cost MCP'],
+    dbTables:['comparisons'], skills:['BOM Compare','Cost Diagnosis'], mcp:['BOM MCP','Cost MCP'],
+  },
+  { id:'AnalysisResult', code:'ANALYSIS_RESULT', name:'分析结果', nameEn:'AnalysisResult', desc:'成本对比分析产生的结果事实。每个结果记录模块级或料件级的成本差异、贡献率、根因类型和置信度。', icon:'analytics',
+    properties:[
+      {name:'result_id',type:'String',required:true,source:'系统',desc:'结果唯一ID'},
+      {name:'comparison_id',type:'String',required:true,source:'系统',desc:'关联对比'},
+      {name:'module_id',type:'String',required:true,source:'计算',desc:'成本模块'},
+      {name:'bom_item_id',type:'String',required:false,source:'计算',desc:'关联BOM项(料件级结果)'},
+      {name:'baseline_cost',type:'Decimal',required:true,source:'计算',desc:'基准成本'},
+      {name:'benchmark_cost',type:'Decimal',required:true,source:'计算',desc:'目标成本'},
+      {name:'difference_amount',type:'Decimal',required:true,source:'计算',desc:'差异金额'},
+      {name:'difference_percent',type:'Decimal',required:true,source:'计算',desc:'差异百分比'},
+      {name:'contribution_percent',type:'Decimal',required:true,source:'计算',desc:'贡献率'},
+      {name:'root_cause_type',type:'String',required:false,source:'AI分析',desc:'根因类型'},
+      {name:'confidence',type:'String',required:false,source:'AI评估',desc:'置信度'},
+      {name:'status',type:'String',required:true,source:'系统',desc:'结果状态'},
+    ],
+    relations:[
+      {name:'producedBy',target:'Comparison',cardinality:'N:1',desc:'结果由对比产生'},
+      {name:'aboutModule',target:'CostModule',cardinality:'N:1',desc:'结果关于一个成本模块'},
+      {name:'refersTo',target:'BOMItem',cardinality:'N:1',desc:'料件级结果关联BOM项'},
+      {name:'verifiedBy',target:'CostObservation',cardinality:'N:N',desc:'结果由成本事实验证'},
+    ],
+    actions:[
+      {name:'View Result',type:'查询类',perm:'Cost Engineer',approval:'否'},
+      {name:'Invalidate Result',type:'审批类',perm:'Cost Manager',approval:'是'},
+    ],
+    dbTables:['analysis_results'], skills:['BOM Compare','Cost Diagnosis'], mcp:['Cost MCP'],
   },
 ];
 
@@ -365,17 +392,20 @@ var DB_TABLES_DATA = [
     {name:'status',type:'VARCHAR(16)',required:true,semantic:'status',source:'系统',desc:'分析状态'},
     {name:'created_by',type:'UUID',required:true,semantic:null,source:'系统',desc:'创建人'},
   ]},
-  {name:'comparison_results',object:'Comparison',fields:[
-    {name:'id',type:'UUID',required:true,semantic:null,source:'系统',desc:'主键'},
-    {name:'comparison_id',type:'UUID',required:true,semantic:null,source:'系统',desc:'关联对比'},
+  {name:'analysis_results',object:'AnalysisResult',fields:[
+    {name:'id',type:'UUID',required:true,semantic:'result_id',source:'系统',desc:'主键'},
+    {name:'comparison_id',type:'UUID',required:true,semantic:'comparison_id',source:'系统',desc:'关联对比'},
     {name:'module_id',type:'UUID',required:true,semantic:'module_id',source:'计算',desc:'成本模块'},
-    {name:'baseline_cost',type:'DECIMAL(12,4)',required:true,semantic:null,source:'计算',desc:'基准成本'},
-    {name:'benchmark_cost',type:'DECIMAL(12,4)',required:true,semantic:null,source:'计算',desc:'目标成本'},
-    {name:'difference_amount',type:'DECIMAL(12,4)',required:true,semantic:null,source:'计算',desc:'差异金额'},
-    {name:'difference_percent',type:'DECIMAL(6,2)',required:true,semantic:null,source:'计算',desc:'差异百分比'},
-    {name:'contribution_percent',type:'DECIMAL(6,2)',required:true,semantic:null,source:'计算',desc:'贡献率'},
-    {name:'root_cause_type',type:'VARCHAR(32)',required:false,semantic:null,source:'AI分析',desc:'根因类型'},
-    {name:'confidence',type:'VARCHAR(16)',required:false,semantic:null,source:'AI评估',desc:'置信度'},
+    {name:'bom_item_id',type:'UUID',required:false,semantic:'bom_item_id',source:'计算',desc:'关联BOM项(料件级结果)'},
+    {name:'baseline_cost',type:'DECIMAL(12,4)',required:true,semantic:'baseline_cost',source:'计算',desc:'基准成本'},
+    {name:'benchmark_cost',type:'DECIMAL(12,4)',required:true,semantic:'benchmark_cost',source:'计算',desc:'目标成本'},
+    {name:'difference_amount',type:'DECIMAL(12,4)',required:true,semantic:'difference_amount',source:'计算',desc:'差异金额'},
+    {name:'difference_percent',type:'DECIMAL(6,2)',required:true,semantic:'difference_percent',source:'计算',desc:'差异百分比'},
+    {name:'contribution_percent',type:'DECIMAL(6,2)',required:true,semantic:'contribution_percent',source:'计算',desc:'贡献率'},
+    {name:'root_cause_type',type:'VARCHAR(32)',required:false,semantic:'root_cause_type',source:'AI分析',desc:'根因类型'},
+    {name:'confidence',type:'VARCHAR(16)',required:false,semantic:'confidence',source:'AI评估',desc:'置信度'},
+    {name:'status',type:'VARCHAR(16)',required:true,semantic:'status',source:'系统',desc:'结果状态'},
+    {name:'created_at',type:'TIMESTAMP',required:true,semantic:null,source:'系统',desc:'创建时间'},
   ]},
   {name:'ontology_relationships',object:'(关系表)',fields:[
     {name:'id',type:'UUID',required:true,semantic:null,source:'Ontology',desc:'主键'},
@@ -390,7 +420,7 @@ var DB_TABLES_DATA = [
 var SKILLS_DATA = [
   {name:'BOM Classifier',code:'bom-classifier',icon:'category',desc:'将 BOMItem 按统一成本分类体系归类到 8 大模块、45 个子模块。',inputs:['BOMItem List','Material Info'],outputs:['Module Assignment'],objects:['BOMItem','Material','CostModule'],confidence:'High'},
   {name:'BOM Compare',code:'bom-compare',icon:'compare',desc:'对比两个 BOM 的成本差异，按成本模块聚合输出差异金额与贡献率。',inputs:['Baseline BOM','Benchmark BOM','Cost Basis'],outputs:['Cost Difference','Module Contribution'],objects:['BOM','BOMItem','CostModule'],confidence:'High'},
-  {name:'Cost Diagnosis',code:'bom-cost-diagnosis',icon:'troubleshoot',desc:'深入分析成本差异根因，沿关系路径下钻到物料、规格、供应商与成本事实。',inputs:['Cost Difference','BOMItem','Material','Specification','Supplier','CostObservation'],outputs:['Root Cause','Evidence','Recommendation'],objects:['BOMItem','Material','Specification','Supplier','CostObservation'],confidence:'High'},
+  {name:'Cost Diagnosis',code:'bom-cost-diagnosis',icon:'troubleshoot',desc:'深入分析成本差异根因，沿关系路径下钻到物料、规格、供应商与成本事实。',inputs:['Cost Difference','BOMItem','Material','Specification','Supplier','CostObservation'],outputs:['Root Cause','Evidence','Recommendation'],objects:['BOMItem','Material','Specification','Supplier','CostObservation','AnalysisResult'],confidence:'High'},
 ];
 
 var MCP_DATA = [
@@ -413,6 +443,8 @@ var ALL_ACTIONS_DATA = [
   {name:'Evaluate Supplier',object:'Supplier',type:'分析类',perm:'Procurement',approval:false,desc:'评估供应商'},
   {name:'Verify Cost',object:'CostObservation',type:'查询类',perm:'Cost Engineer',approval:false,desc:'验证成本事实'},
   {name:'Run Comparison',object:'Comparison',type:'分析类',perm:'Cost Engineer',approval:false,desc:'执行成本对比分析'},
+  {name:'View Result',object:'AnalysisResult',type:'查询类',perm:'Cost Engineer',approval:false,desc:'查看分析结果'},
+  {name:'Invalidate Result',object:'AnalysisResult',type:'审批类',perm:'Cost Manager',approval:true,desc:'作废失效结果'},
 ];
 
 var COST_MODULES_8 = [
