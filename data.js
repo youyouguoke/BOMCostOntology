@@ -84,7 +84,6 @@ const OBJECTS = [
     relations:[
       {name:'belongsTo',target:'ProductVersion',cardinality:'N:1',desc:'BOM属于一个产品版本'},
       {name:'contains',target:'BOMItem',cardinality:'1:N',desc:'一个BOM包含多个BOMItem'},
-      {name:'subjectOf',target:'Comparison',cardinality:'1:N',desc:'BOM是对比的客体'},
     ],
     actions:[
       {name:'Create BOM',type:'Write',perm:'Engineer',approval:'否'},
@@ -243,7 +242,6 @@ const OBJECTS = [
     relations:[
       {name:'baselineOf',target:'BOM',cardinality:'N:1',desc:'对比的基准BOM'},
       {name:'benchmarkOf',target:'BOM',cardinality:'N:1',desc:'对比的目标BOM'},
-      {name:'produces',target:'AnalysisResult',cardinality:'1:N',desc:'对比产生分析结果'},
     ],
     actions:[
       {name:'Create Comparison',type:'Write',perm:'Cost Engineer',approval:'否'},
