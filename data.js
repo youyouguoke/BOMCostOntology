@@ -280,6 +280,28 @@ const OBJECTS = [
     ],
     dbTables:['analysis_results'], skills:['BOM Compare','Cost Diagnosis'], mcp:['Cost MCP'],
   },
+  { id:'Report', code:'REPORT', name:'分析报告', nameEn:'Report', desc:'基于分析结果生成的面向业务决策的组织化报告。报告将结构化差异行组织为可读的分析结论、证据引用和优化建议。', icon:'description',
+    properties:[
+      {name:'report_id',type:'String',required:true,source:'系统',desc:'报告唯一ID'},
+      {name:'comparison_id',type:'String',required:true,source:'系统',desc:'来源对比'},
+      {name:'report_type',type:'String',required:true,source:'系统',desc:'报告类型(CostComparison/RootCauseDiagnosis/Optimization)'},
+      {name:'title',type:'String',required:true,source:'系统',desc:'报告标题'},
+      {name:'generated_date',type:'Date',required:true,source:'系统',desc:'生成时间'},
+      {name:'generated_by',type:'String',required:true,source:'系统',desc:'生成方(Agent/Engineer)'},
+      {name:'status',type:'String',required:true,source:'系统',desc:'报告状态(Draft/Published/Archived)'},
+    ],
+    relations:[
+      {name:'generatedFrom',target:'Comparison',cardinality:'N:1',desc:'报告基于哪次对比'},
+      {name:'aggregates',target:'AnalysisResult',cardinality:'1:N',desc:'报告聚合哪些分析结果'},
+      {name:'reviewedBy',target:'User',cardinality:'N:N',desc:'报告被谁审阅'},
+    ],
+    actions:[
+      {name:'Generate Report',type:'分析类',perm:'Cost Engineer',approval:'否'},
+      {name:'Publish Report',type:'审批类',perm:'Cost Manager',approval:'是'},
+      {name:'Archive Report',type:'审批类',perm:'Cost Manager',approval:'是'},
+    ],
+    dbTables:['reports'], skills:['BOM Compare','Cost Diagnosis'], mcp:['Cost MCP'],
+  },
 ];
 
 var DB_TABLES_DATA = [
@@ -410,6 +432,17 @@ var DB_TABLES_DATA = [
     {name:'status',type:'VARCHAR(16)',required:true,semantic:'status',source:'系统',desc:'结果状态(Active/Verified/Invalidated)'},
     {name:'created_at',type:'TIMESTAMP',required:true,semantic:null,source:'系统',desc:'创建时间'},
   ]},
+  {name:'reports',object:'Report',fields:[
+    {name:'id',type:'UUID',required:true,semantic:'report_id',source:'系统',desc:'主键'},
+    {name:'comparison_id',type:'UUID',required:true,semantic:'comparison_id',source:'系统',desc:'来源对比'},
+    {name:'report_type',type:'VARCHAR(32)',required:true,semantic:'report_type',source:'系统',desc:'报告类型(CostComparison/RootCauseDiagnosis/Optimization)'},
+    {name:'title',type:'VARCHAR(256)',required:true,semantic:'title',source:'系统',desc:'报告标题'},
+    {name:'generated_date',type:'DATE',required:true,semantic:'generated_date',source:'系统',desc:'生成时间'},
+    {name:'generated_by',type:'VARCHAR(32)',required:true,semantic:'generated_by',source:'系统',desc:'生成方(Agent/Engineer)'},
+    {name:'status',type:'VARCHAR(16)',required:true,semantic:'status',source:'系统',desc:'报告状态(Draft/Published/Archived)'},
+    {name:'created_at',type:'TIMESTAMP',required:true,semantic:null,source:'系统',desc:'创建时间'},
+    {name:'updated_at',type:'TIMESTAMP',required:true,semantic:null,source:'系统',desc:'更新时间'},
+  ]},
   {name:'ontology_relationships',object:'(关系表)',fields:[
     {name:'id',type:'UUID',required:true,semantic:null,source:'Ontology',desc:'主键'},
     {name:'from_object',type:'VARCHAR(64)',required:true,semantic:null,source:'Ontology',desc:'源对象'},
@@ -448,6 +481,9 @@ var ALL_ACTIONS_DATA = [
   {name:'Run Comparison',object:'Comparison',type:'分析类',perm:'Cost Engineer',approval:false,desc:'执行成本对比分析'},
   {name:'View Result',object:'AnalysisResult',type:'查询类',perm:'Cost Engineer',approval:false,desc:'查看分析结果'},
   {name:'Invalidate Result',object:'AnalysisResult',type:'审批类',perm:'Cost Manager',approval:true,desc:'作废失效结果'},
+  {name:'Generate Report',object:'Report',type:'分析类',perm:'Cost Engineer',approval:false,desc:'基于分析结果生成报告'},
+  {name:'Publish Report',object:'Report',type:'审批类',perm:'Cost Manager',approval:true,desc:'发布报告'},
+  {name:'Archive Report',object:'Report',type:'审批类',perm:'Cost Manager',approval:true,desc:'归档报告'},
 ];
 
 var COST_MODULES_8 = [
