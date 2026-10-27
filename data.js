@@ -39,9 +39,7 @@ const OBJECTS = [
       {name:'product_line',type:'String',required:false,source:'ERP',desc:'产品线'},
       {name:'status',type:'String',required:true,source:'ERP',desc:'状态'},
     ],
-    relations:[
-      {name:'hasVersion',target:'ProductVersion',cardinality:'1:N',desc:'一个产品有多个版本'},
-    ],
+    relations:[],
     actions:[
       {name:'Create Product',type:'Write',perm:'Product Manager',approval:'否'},
       {name:'Update Product',type:'Write',perm:'Product Manager',approval:'否'},
@@ -60,7 +58,6 @@ const OBJECTS = [
     ],
     relations:[
       {name:'belongsTo',target:'Product',cardinality:'N:1',desc:'版本属于一个产品'},
-      {name:'hasBOM',target:'BOM',cardinality:'1:N',desc:'一个版本有多个 BOM'},
       {name:'comparedWith',target:'ProductVersion',cardinality:'N:N',desc:'版本对比意图'},
     ],
     actions:[
@@ -83,7 +80,6 @@ const OBJECTS = [
     ],
     relations:[
       {name:'belongsTo',target:'ProductVersion',cardinality:'N:1',desc:'BOM属于一个产品版本'},
-      {name:'contains',target:'BOMItem',cardinality:'1:N',desc:'一个BOM包含多个BOMItem'},
     ],
     actions:[
       {name:'Create BOM',type:'Write',perm:'Engineer',approval:'否'},
@@ -133,8 +129,6 @@ const OBJECTS = [
     ],
     relations:[
       {name:'usedBy',target:'BOMItem',cardinality:'1:N',desc:'物料被多个BOMItem使用'},
-      {name:'hasSpecification',target:'Specification',cardinality:'1:N',desc:'物料有多个规格参数'},
-      {name:'hasCostObservation',target:'CostObservation',cardinality:'1:N',desc:'物料有多个成本事实'},
     ],
     actions:[
       {name:'Create Material',type:'Write',perm:'Engineer',approval:'否'},
@@ -154,7 +148,6 @@ const OBJECTS = [
       {name:'sort_order',type:'Integer',required:false,source:'Ontology',desc:'排序'},
     ],
     relations:[
-      {name:'parentOf',target:'CostModule',cardinality:'1:N',desc:'父模块包含子模块'},
       {name:'classifies',target:'BOMItem',cardinality:'1:N',desc:'模块分类多个BOMItem'},
     ],
     actions:[
@@ -175,7 +168,6 @@ const OBJECTS = [
     ],
     relations:[
       {name:'supplies',target:'BOMItem',cardinality:'1:N',desc:'供应商供应多个BOMItem'},
-      {name:'provides',target:'CostObservation',cardinality:'1:N',desc:'供应商提供成本报价'},
     ],
     actions:[
       {name:'Create Supplier',type:'Write',perm:'Procurement',approval:'否'},
