@@ -61,6 +61,7 @@ const OBJECTS = [
     relations:[
       {name:'belongsTo',target:'Product',cardinality:'N:1',desc:'版本属于一个产品'},
       {name:'hasBOM',target:'BOM',cardinality:'1:N',desc:'一个版本有多个 BOM'},
+      {name:'comparedWith',target:'ProductVersion',cardinality:'N:N',desc:'版本对比意图'},
     ],
     actions:[
       {name:'Create Version',type:'Write',perm:'Engineer',approval:'否'},
