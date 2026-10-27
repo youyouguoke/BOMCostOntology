@@ -289,7 +289,7 @@ const OBJECTS = [
       {name:'status',type:'String',required:true,source:'系统',desc:'报告状态(Draft/Published/Archived)'},
     ],
     relations:[
-      {name:'generatedFrom',target:'Comparison',cardinality:'N:1',desc:'报告基于哪次对比'},
+      {name:'producedBy',target:'Comparison',cardinality:'N:1',desc:'报告基于哪次对比'},
       {name:'aggregates',target:'AnalysisResult',cardinality:'1:N',desc:'报告聚合哪些分析结果'},
       {name:'reviewedBy',target:'User',cardinality:'N:N',desc:'报告被谁审阅'},
     ],
