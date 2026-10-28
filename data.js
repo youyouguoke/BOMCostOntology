@@ -127,9 +127,7 @@ const OBJECTS = [
       {name:'material_category',type:'String',required:false,source:'PLM',desc:'物料类别'},
       {name:'lifecycle_status',type:'String',required:true,source:'PLM',desc:'生命周期状态'},
     ],
-    relations:[
-      {name:'usedBy',target:'BOMItem',cardinality:'1:N',desc:'物料被多个BOMItem使用'},
-    ],
+    relations:[],
     actions:[
       {name:'Create Material',type:'Write',perm:'Engineer',approval:'否'},
       {name:'Update Material',type:'Write',perm:'Engineer',approval:'否'},
@@ -149,6 +147,7 @@ const OBJECTS = [
     ],
     relations:[
       {name:'classifies',target:'BOMItem',cardinality:'1:N',desc:'模块分类多个BOMItem'},
+      {name:'belongsTo',target:'CostModule',cardinality:'N:1',desc:'子模块归属于父模块'},
     ],
     actions:[
       {name:'Create Module',type:'Write',perm:'Cost Engineer',approval:'否'},
@@ -168,6 +167,7 @@ const OBJECTS = [
     ],
     relations:[
       {name:'supplies',target:'BOMItem',cardinality:'1:N',desc:'供应商供应多个BOMItem'},
+      {name:'provides',target:'CostObservation',cardinality:'1:N',desc:'供应商提供成本报价'},
     ],
     actions:[
       {name:'Create Supplier',type:'Write',perm:'Procurement',approval:'否'},
