@@ -108,7 +108,6 @@ const OBJECTS = [
       {name:'refersTo',target:'Material',cardinality:'N:1',desc:'BOMItem引用一个物料'},
       {name:'hasParent',target:'BOMItem',cardinality:'N:1',desc:'BOMItem可以有父项'},
       {name:'classifiedAs',target:'CostModule',cardinality:'N:1',desc:'按统一成本分类体系归属'},
-      {name:'suppliedBy',target:'Supplier',cardinality:'N:1',desc:'BOMItem对应一个供应商'},
     ],
     actions:[
       {name:'Add Item',type:'Write',perm:'Engineer',approval:'否'},
@@ -146,7 +145,6 @@ const OBJECTS = [
       {name:'sort_order',type:'Integer',required:false,source:'Ontology',desc:'排序'},
     ],
     relations:[
-      {name:'classifies',target:'BOMItem',cardinality:'1:N',desc:'模块分类多个BOMItem'},
       {name:'belongsTo',target:'CostModule',cardinality:'N:1',desc:'子模块归属于父模块'},
     ],
     actions:[
@@ -165,10 +163,7 @@ const OBJECTS = [
       {name:'region',type:'String',required:false,source:'采购系统',desc:'区域'},
       {name:'status',type:'String',required:true,source:'采购系统',desc:'状态'},
     ],
-    relations:[
-      {name:'supplies',target:'BOMItem',cardinality:'1:N',desc:'供应商供应多个BOMItem'},
-      {name:'provides',target:'CostObservation',cardinality:'1:N',desc:'供应商提供成本报价'},
-    ],
+    relations:[],
     actions:[
       {name:'Create Supplier',type:'Write',perm:'Procurement',approval:'否'},
       {name:'Update Supplier',type:'Write',perm:'Procurement',approval:'否'},
